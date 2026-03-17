@@ -1,9 +1,233 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Web của tôi</title>
-</head>
-<body>
-  <h1>Web chạy rồi!</h1>
-</body>
-</html>
+"use client"
+import { useState } from "react"
+
+export default function Home(){
+
+const [product,setProduct]=useState("")
+const [preview,setPreview]=useState(null)
+
+const [promptImage,setPromptImage]=useState("")
+const [videoPrompt1,setVideoPrompt1]=useState("")
+const [videoPrompt2,setVideoPrompt2]=useState("")
+
+// ===== VOICE DATA (GIỮ NGUYÊN FULL CỦA BẠN) =====
+const voiceData = {
+"mô hình": {
+v1:"Nhìn qua tưởng bình thường, nhưng khi quay cận và xoay 360 thì mới thấy mô hình này làm cực kỳ chi tiết! Từ gương mặt đến trang phục đều rất sắc nét.",
+v2:"Các đường nét được hoàn thiện kỹ, màu sơn đều, dáng pose rất có thần — trưng lên là nổi bật ngay. Nếu bạn thích sưu tầm hoặc decor góc bàn thì mình để link dưới cho bạn tham khảo!"
+},
+"tai nghe": {
+v1:"Đừng mua tai nghe vội… mình vừa test thử con này và thật sự bất ngờ! Nhìn nhỏ gọn vậy thôi nhưng thiết kế rất tinh tế, quay 360 thấy rõ từng chi tiết, đeo lên nhìn gọn tai mà vẫn nổi bật.",
+v2:"Âm thanh rõ, bass nghe rất đã, gần như không bị delay khi xem video hay chơi game, đeo lâu không đau tai và pin dùng được khá lâu. Với mức giá này thì quá ổn, mình để link bên dưới cho bạn nào muốn tham khảo!"
+}
+// 👉 dán full 25 loại của bạn vào đây
+}
+
+// ===== AUTO CHÈN TÊN =====
+function getVoice(product){
+const name = product.toLowerCase()
+
+for (let key in voiceData){
+if(name.includes(key)){
+const extra = product.replace(new RegExp(key,"i"),"").trim()
+const suffix = extra ? ` ${key} ${extra}` : ` ${key}`
+
+return{
+v1: voiceData[key].v1 + suffix,
+v2: voiceData[key].v2 + suffix
+}
+}
+}
+
+return{
+v1:`${product} nhìn khá ổn ngay từ cái nhìn đầu tiên.`,
+v2:`Chi tiết hoàn thiện tốt và phù hợp sử dụng hằng ngày.`
+}
+}
+
+// ===== IMAGE =====
+function handleImage(e){
+const file = e.target.files[0]
+if(file){
+setPreview(URL.createObjectURL(file))
+}
+}
+
+function copyText(text){
+navigator.clipboard.writeText(text)
+alert("Đã copy!")
+}
+
+// ===== GENERATE (ĐÃ FIX ANTI BIẾN DẠNG) =====
+function generatePrompt(){
+const voice = getVoice(product)
+const isModel = product.toLowerCase().includes("mô hình")
+
+const displayType = isModel
+? "kệ xoay trưng bày mô hình"
+: "kệ trưng bày hiện đại"
+
+// ===== PROMPT ẢNH =====
+const imagePrompt = `
+📸 PROMPT ẢNH SẢN PHẨM
+
+📦 ${product}
+
+⚠️ QUY TẮC BẮT BUỘC:
+- SỬ DỤNG CHÍNH XÁC ảnh upload gốc
+- KHÔNG thay đổi thiết kế sản phẩm
+- KHÔNG thêm chi tiết mới
+- KHÔNG sáng tạo lại sản phẩm
+- KHÔNG biến dạng hình dáng
+- KHÔNG thay đổi màu sắc
+- KHÔNG stylize
+
+🎯 NHÂN VẬT:
+- Giữ nguyên 100% khuôn mặt
+- Giữ nguyên outfit
+- Không thay đổi body
+
+📦 TRƯNG BÀY:
+- Đặt trên ${displayType}
+- Không đặt trực tiếp xuống bàn
+- Sản phẩm đứng cố định
+
+🎨 HÌNH ẢNH:
+- Background sạch
+- Ánh sáng studio
+- Ultra realistic
+- Sharp focus
+- No distortion
+- No AI artifacts
+`
+
+// ===== CẢNH 1 =====
+const scene1 = `
+🎬 CẢNH 1 (0-10s)
+
+📦 ${product}
+
+⚠️ QUY TẮC:
+- Giữ nguyên 100% sản phẩm gốc
+- Không thay đổi thiết kế
+- Không thêm chi tiết
+- Không biến dạng
+
+🎥:
+- Quay 360 sản phẩm
+- Sản phẩm đứng yên trên ${displayType}
+- Có tay cầm nhẹ nhưng KHÔNG che sản phẩm
+
+⚠️ ANTI LỖI:
+- no deformation
+- no redesign
+- no extra parts
+- no shape change
+- no color change
+- no blur
+- no ghosting
+- no duplicate object
+- sharp focus lock
+
+🎙 Voice:
+🔥 ${voice.v1}
+`
+
+// ===== CẢNH 2 =====
+const scene2 = `
+🎬 CẢNH 2 (10-20s)
+
+📦 ${product}
+
+⚠️ QUY TẮC:
+- Giữ nguyên tuyệt đối sản phẩm
+- Không sáng tạo lại
+- Không thay đổi chi tiết
+- Không biến dạng
+
+🎥:
+- Zoom vào các góc nổi bật
+- Giữ nguyên texture, màu sắc
+- Không có tay
+- Sản phẩm đứng yên
+
+⚠️ ANTI LỖI:
+- no deformation
+- no redesign
+- no added details
+- no missing parts
+- no morphing
+- no blur
+- no ghosting
+- no duplicate
+- ultra sharp focus
+
+🎙 Voice:
+💰 ${voice.v2}
+`
+
+setPromptImage(imagePrompt)
+setVideoPrompt1(scene1)
+setVideoPrompt2(scene2)
+}
+
+// ===== UI =====
+return(
+<div className="min-h-screen bg-gray-100 p-6">
+
+<div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
+
+{/* INPUT */}
+<div className="bg-white p-6 rounded-2xl shadow">
+<h2 className="text-xl font-bold mb-4">Nhập sản phẩm</h2>
+
+<input
+className="border p-3 w-full mb-4 rounded"
+placeholder="Nhập tên sản phẩm..."
+onChange={(e)=>setProduct(e.target.value)}
+/>
+
+<input type="file" onChange={handleImage}/>
+
+{preview && <img src={preview} className="mt-4 rounded"/>}
+
+<button
+className="bg-black text-white p-3 w-full rounded-xl mt-4"
+onClick={generatePrompt}
+>
+Tạo Prompt
+</button>
+</div>
+
+{/* OUTPUT */}
+<div className="bg-white p-6 rounded-2xl shadow space-y-4">
+<h2 className="text-xl font-bold">Output</h2>
+
+<div>
+<textarea className="w-full h-[150px] border p-2" value={promptImage}/>
+<button className="bg-blue-500 text-white px-3 py-1 mt-2 rounded" onClick={()=>copyText(promptImage)}>
+Copy Prompt Ảnh
+</button>
+</div>
+
+<div>
+<textarea className="w-full h-[150px] border p-2" value={videoPrompt1}/>
+<button className="bg-green-500 text-white px-3 py-1 mt-2 rounded" onClick={()=>copyText(videoPrompt1)}>
+Copy Cảnh 1 (360)
+</button>
+</div>
+
+<div>
+<textarea className="w-full h-[200px] border p-2" value={videoPrompt2}/>
+<button className="bg-purple-500 text-white px-3 py-1 mt-2 rounded" onClick={()=>copyText(videoPrompt2)}>
+Copy Cảnh 2 (Zoom)
+</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+)
+}
