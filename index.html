@@ -1,74 +1,73 @@
 "use client"
 import { useState } from "react"
 
-export default function Home(){
+export default function Home() {
 
-const [product,setProduct]=useState("")
-const [preview,setPreview]=useState(null)
+  const [product, setProduct] = useState("")
+  const [preview, setPreview] = useState<string | null>(null)
 
-const [promptImage,setPromptImage]=useState("")
-const [videoPrompt1,setVideoPrompt1]=useState("")
-const [videoPrompt2,setVideoPrompt2]=useState("")]
+  const [promptImage, setPromptImage] = useState("")
+  const [videoPrompt1, setVideoPrompt1] = useState("")
+  const [videoPrompt2, setVideoPrompt2] = useState("")
 
-// ===== VOICE DATA (GIỮ NGUYÊN FULL CỦA BẠN) =====
-const voiceData = {
-"mô hình": {
-v1:"Nhìn qua tưởng bình thường, nhưng khi quay cận và xoay 360 thì mới thấy mô hình này làm cực kỳ chi tiết! Từ gương mặt đến trang phục đều rất sắc nét.",
-v2:"Các đường nét được hoàn thiện kỹ, màu sơn đều, dáng pose rất có thần — trưng lên là nổi bật ngay. Nếu bạn thích sưu tầm hoặc decor góc bàn thì mình để link dưới cho bạn tham khảo!"
-},
-"tai nghe": {
-v1:"Đừng mua tai nghe vội… mình vừa test thử con này và thật sự bất ngờ! Nhìn nhỏ gọn vậy thôi nhưng thiết kế rất tinh tế, quay 360 thấy rõ từng chi tiết, đeo lên nhìn gọn tai mà vẫn nổi bật.",
-v2:"Âm thanh rõ, bass nghe rất đã, gần như không bị delay khi xem video hay chơi game, đeo lâu không đau tai và pin dùng được khá lâu. Với mức giá này thì quá ổn, mình để link bên dưới cho bạn nào muốn tham khảo!"
-}
-// 👉 dán full 25 loại của bạn vào đây
-}
+  // ===== VOICE DATA =====
+  const voiceData: any = {
+    "mô hình": {
+      v1: "Nhìn qua tưởng bình thường, nhưng khi quay cận và xoay 360 thì mới thấy mô hình này làm cực kỳ chi tiết! Từ gương mặt đến trang phục đều rất sắc nét.",
+      v2: "Các đường nét được hoàn thiện kỹ, màu sơn đều, dáng pose rất có thần — trưng lên là nổi bật ngay. Nếu bạn thích sưu tầm hoặc decor góc bàn thì mình để link dưới cho bạn tham khảo!"
+    },
+    "tai nghe": {
+      v1: "Đừng mua tai nghe vội… mình vừa test thử con này và thật sự bất ngờ! Nhìn nhỏ gọn vậy thôi nhưng thiết kế rất tinh tế, quay 360 thấy rõ từng chi tiết, đeo lên nhìn gọn tai mà vẫn nổi bật.",
+      v2: "Âm thanh rõ, bass nghe rất đã, gần như không bị delay khi xem video hay chơi game, đeo lâu không đau tai và pin dùng được khá lâu. Với mức giá này thì quá ổn, mình để link bên dưới cho bạn nào muốn tham khảo!"
+    }
+  }
 
-// ===== AUTO CHÈN TÊN =====
-function getVoice(product){
-const name = product.toLowerCase()
+  // ===== AUTO VOICE =====
+  function getVoice(product: string) {
+    const name = product.toLowerCase()
 
-for (let key in voiceData){
-if(name.includes(key)){
-const extra = product.replace(new RegExp(key,"i"),"").trim()
-const suffix = extra ? ` ${key} ${extra}` : ` ${key}`
+    for (let key in voiceData) {
+      if (name.includes(key)) {
+        const extra = product.replace(new RegExp(key, "i"), "").trim()
+        const suffix = extra ? ` ${key} ${extra}` : ` ${key}`
 
-return{
-v1: voiceData[key].v1 + suffix,
-v2: voiceData[key].v2 + suffix
-}
-}
-}
+        return {
+          v1: voiceData[key].v1 + suffix,
+          v2: voiceData[key].v2 + suffix
+        }
+      }
+    }
 
-return{
-v1:`${product} nhìn khá ổn ngay từ cái nhìn đầu tiên.`,
-v2:`Chi tiết hoàn thiện tốt và phù hợp sử dụng hằng ngày.`
-}
-}
+    return {
+      v1: `${product} nhìn khá ổn ngay từ cái nhìn đầu tiên.`,
+      v2: `Chi tiết hoàn thiện tốt và phù hợp sử dụng hằng ngày.`
+    }
+  }
 
-// ===== IMAGE =====
-function handleImage(e){
-const file = e.target.files?.[0]
-if(file){
-setPreview(URL.createObjectURL(file))
-}
-}
+  // ===== IMAGE =====
+  function handleImage(e: any) {
+    const file = e.target.files[0]
+    if (file) {
+      setPreview(URL.createObjectURL(file))
+    }
+  }
 
-function copyText(text){
-navigator.clipboard.writeText(text)
-alert("Đã copy!")
-}
+  function copyText(text: string) {
+    navigator.clipboard.writeText(text)
+    alert("Đã copy!")
+  }
 
-// ===== GENERATE (ĐÃ FIX ANTI BIẾN DẠNG) =====
-function generatePrompt(){
-const voice = getVoice(product)
-const isModel = product.toLowerCase().includes("mô hình")
+  // ===== GENERATE =====
+  function generatePrompt() {
 
-const displayType = isModel
-? "kệ xoay trưng bày mô hình"
-: "kệ trưng bày hiện đại"
+    const voice = getVoice(product)
+    const isModel = product.toLowerCase().includes("mô hình")
 
-// ===== PROMPT ẢNH =====
-const imagePrompt = `
+    const displayType = isModel
+      ? "kệ xoay trưng bày mô hình"
+      : "kệ trưng bày hiện đại"
+
+    const imagePrompt = `
 📸 PROMPT ẢNH SẢN PHẨM
 
 📦 ${product}
@@ -101,8 +100,7 @@ const imagePrompt = `
 - No AI artifacts
 `
 
-// ===== CẢNH 1 =====
-const scene1 = `
+    const scene1 = `
 🎬 CẢNH 1 (0-10s)
 
 📦 ${product}
@@ -133,8 +131,7 @@ const scene1 = `
 🔥 ${voice.v1}
 `
 
-// ===== CẢNH 2 =====
-const scene2 = `
+    const scene2 = `
 🎬 CẢNH 2 (10-20s)
 
 📦 ${product}
@@ -166,67 +163,92 @@ const scene2 = `
 💰 ${voice.v2}
 `
 
-setPromptImage(imagePrompt)
-setVideoPrompt1(scene1)
-setVideoPrompt2(scene2)
-}
+    setPromptImage(imagePrompt)
+    setVideoPrompt1(scene1)
+    setVideoPrompt2(scene2)
+  }
 
-// ===== UI =====
-return(
-<div className="min-h-screen bg-gray-100 p-6">
-<div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
+  // ===== UI =====
+  return (
+    <div className="min-h-screen bg-gray-100 p-6">
 
-{/* LEFT */}
-<div className="bg-white p-6 rounded-2xl shadow">
-<h2 className="text-xl font-bold mb-4">Nhập sản phẩm</h2>
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
 
-<input
-value={product}
-onChange={(e)=>setProduct(e.target.value)}
-placeholder="Nhập tên sản phẩm..."
-className="border p-3 w-full mb-4 rounded"
-/>
+        {/* LEFT */}
+        <div className="bg-white p-6 rounded-2xl shadow">
+          <h2 className="text-xl font-bold mb-4">Nhập sản phẩm</h2>
 
-<input type="file" onChange={handleImage}/>
+          <input
+            className="border p-3 w-full mb-4 rounded"
+            placeholder="Nhập tên sản phẩm..."
+            value={product}
+            onChange={(e) => setProduct(e.target.value)}
+          />
 
-{preview && <img src={preview} className="mt-4 rounded w-40" />}
+          <input type="file" onChange={handleImage} />
 
-<button
-className="bg-black text-white p-3 w-full rounded-xl mt-4"
-onClick={generatePrompt}
->
-Tạo Prompt
-</button>
-</div>
+          {preview && (
+            <img src={preview} className="mt-4 rounded" />
+          )}
 
-{/* RIGHT */}
-<div className="bg-white p-6 rounded-2xl shadow space-y-4">
-<h2 className="text-xl font-bold">Output</h2>
+          <button
+            className="bg-black text-white p-3 w-full rounded-xl mt-4"
+            onClick={generatePrompt}
+          >
+            Tạo Prompt
+          </button>
+        </div>
 
-<div>
-<textarea readOnly value={promptImage} className="w-full h-[150px] border p-2"/>
-<button className="bg-blue-500 text-white px-3 py-1 mt-2 rounded" onClick={()=>copyText(promptImage)}>
-Copy Prompt Ảnh
-</button>
-</div>
+        {/* RIGHT */}
+        <div className="bg-white p-6 rounded-2xl shadow space-y-4">
+          <h2 className="text-xl font-bold">Output</h2>
 
-<div>
-<textarea readOnly value={videoPrompt1} className="w-full h-[150px] border p-2"/>
-<button className="bg-green-500 text-white px-3 py-1 mt-2 rounded" onClick={()=>copyText(videoPrompt1)}>
-Copy Cảnh 1 (360)
-</button>
-</div>
+          <div>
+            <textarea
+              className="w-full h-[150px] border p-2"
+              value={promptImage}
+              readOnly
+            />
+            <button
+              className="bg-blue-500 text-white px-3 py-1 mt-2 rounded"
+              onClick={() => copyText(promptImage)}
+            >
+              Copy Prompt Ảnh
+            </button>
+          </div>
 
-<div>
-<textarea readOnly value={videoPrompt2} className="w-full h-[200px] border p-2"/>
-<button className="bg-purple-500 text-white px-3 py-1 mt-2 rounded" onClick={()=>copyText(videoPrompt2)}>
-Copy Cảnh 2 (Zoom)
-</button>
-</div>
+          <div>
+            <textarea
+              className="w-full h-[150px] border p-2"
+              value={videoPrompt1}
+              readOnly
+            />
+            <button
+              className="bg-green-500 text-white px-3 py-1 mt-2 rounded"
+              onClick={() => copyText(videoPrompt1)}
+            >
+              Copy Cảnh 1 (360)
+            </button>
+          </div>
 
-</div>
+          <div>
+            <textarea
+              className="w-full h-[200px] border p-2"
+              value={videoPrompt2}
+              readOnly
+            />
+            <button
+              className="bg-purple-500 text-white px-3 py-1 mt-2 rounded"
+              onClick={() => copyText(videoPrompt2)}
+            >
+              Copy Cảnh 2 (Zoom)
+            </button>
+          </div>
 
-</div>
-</div>
-)
+        </div>
+
+      </div>
+
+    </div>
+  )
 }
